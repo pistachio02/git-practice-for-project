@@ -12,26 +12,7 @@ import './App.css';
 const App = (props) => {
   return (
      <BrowserRouter>
-      <div className="App">
-        <main>
-          <Sidebar />
-          <section className="features">
-            <Switch>
-             <Route exact path="/">
-              <Tweets />
-             </Route>
-             <Route path = "/about">
-               <About/>
-             </Route>
-             <Route path = "/mypage">
-               <MyPage/>
-             </Route>
-            {/* TODO : 유어클래스를 참고해서, 테스트 케이스를 통과하세요.
-            TODO : React Router DOM 설치 후 BrowserRouter, Route의 주석을 해제하고 Swtich 컴포넌트를 적절하게 작성합니다. */}
-            </Switch>
-          </section>
-        </main>
-      </div>
+      Fill_this
      </BrowserRouter>
   );
 };

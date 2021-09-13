@@ -14,25 +14,7 @@ const MyPage = () => {
 
   return (
     <section className="myInfo">
-      <div className="myInfo__container">
-        <div className="myInfo__wrapper">
-          <div className="myInfo__profile">
-            <img src={filteredTweets[1].picture} />
-          </div>
-          <div className="myInfo__detail">
-            <p className="myInfo__detailName">
-              {filteredTweets[1].username} Profile
-            </p>
-            <p>28 팔로워 100 팔로잉</p>
-          </div>
-        </div>
-      </div>
-      <ul className="tweets__mypage">
-        {filterPark.map((tweet) =>{
-          return <Tweet key ={tweet.id} tweet={tweet} />
-        })}
-      </ul>
-      <Footer />
+     Fill_this
     </section>
   );
 };

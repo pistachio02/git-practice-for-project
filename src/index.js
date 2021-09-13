@@ -5,6 +5,6 @@ import App from './App';
 import dummyTweets from './static/dummyData';
 
 ReactDOM.render(
-  <App dummyTweets={dummyTweets} />,
+  <App dummyTweets={Fill_this} />,
   document.getElementById('root')
 );
