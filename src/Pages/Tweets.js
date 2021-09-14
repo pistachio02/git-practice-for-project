@@ -1,42 +1,79 @@
-// TODO : useState를 react로 부터 import 합니다.
 import React, { useState } from 'react';
 import Footer from '../Footer';
 import Tweet from '../Components/Tweet';
 import './Tweets.css';
 import dummyTweets from '../static/dummyData';
+import shortid from 'shortid';
 
 const Tweets = () => {
-  // TODO : 새로 트윗을 작성하고 전송할 수 있게 useState를 적절히 활용하세요.
-  const [name, setName] = useState("parkhacker");
-  const [message, setMessage] = useState("");
-  const [inputs , setInputs]  = useState (dummyTweets);
-
+  const [username, setUsername] = useState('parkhacker');
+  const [msg, setMsg] = useState('');
+  const [tweets, setTweets] = useState(dummyTweets);
+  const [filteredTweets, setFilteredTweets] = useState(dummyTweets);
+  const [isFiltered, setIsFiltered] = useState(false);
+  const [currentUsername, setCurrentUsername] = useState('default');
 
   const handleButtonClick = (event) => {
-    const tweet = { 
-      id: inputs.length+1,
-      username: name,
-      content: message, 
-      picture: `https://randomuser.me/api/portraits/men/98.jpg`,
-      createdAt: new Date().toLocaleDateString('ko-kr')
+    const tweet = {
+      id: shortid(),
+      username: username,
+      picture: 'https://randomuser.me/api/portraits/men/98.jpg',
+      title: 'new Tweet',
+      content: msg,
+      createdAt: new Date().toLocaleDateString('ko-KR'),
+      updatedAt: new Date().toLocaleDateString('ko-KR'),
     };
-    // TODO : Tweet button 엘리먼트 클릭시 작동하는 함수를 완성하세요.
-    // 트윗 전송이 가능하게 작성해야 합니다.
-    
-    setInputs([tweet,...inputs]);
+    const newTweets = [tweet, ...tweets];
+    setTweets(newTweets);
   };
 
   const handleChangeUser = (event) => {
-    // TODO : Tweet input 엘리먼트에 입력 시 작동하는 함수를 완성하세요.
-    setName(event.target.value);
-  };
+    setUsername(event.target.value)
+  }
 
   const handleChangeMsg = (event) => {
-    // TODO : Tweet textarea 엘리먼트에 입력 시 작동하는 함수를 완성하세요.
-    setMessage(event.target.value);
+    setMsg(event.target.value)
+  }
+
+  const handleFilterTweet = (event) => {
+    if (event.target.value === 'default') {
+      setTweets(tweets);
+      setIsFiltered(false);
+    } else {
+      const filtered = tweets.filter(
+        (tweet) => tweet.username === event.target.value
+      );
+      setIsFiltered(true);
+      setFilteredTweets(filtered);
+    }
+    setCurrentUsername(event.target.value);
   };
 
+  const handleDeleteTweet = (username, deleteIndex) => {
+    if (isFiltered) {
+      alert('필터 시 삭제 불가합니다.')
+      return;
+    }
+    const restTweets = tweets.filter((tweet, idx) => idx !== deleteIndex);
+    setTweets(restTweets);
+  };
 
+  const handleAllTweetButton = (event) => {
+    setIsFiltered(false);
+    // setTweets(tweets);
+    setCurrentUsername('default');
+  };
+
+  const tweetsRenderer = (tweet, idx) => {
+    return (
+      <Tweet
+        key={tweet.id}
+        tweet={tweet}
+        handleDeleteTweet={handleDeleteTweet}
+        idx={idx}
+      />
+    );
+  }
 
   return (
     <React.Fragment>
@@ -50,38 +87,67 @@ const Tweets = () => {
               <div className="tweetForm__input">
                 <input
                   type="text"
-                  defaultValue="parkhacker"
+                  value={username}
+                  onChange={handleChangeUser}
                   placeholder="your username here.."
                   className="tweetForm__input--username"
-                  onChange = {handleChangeUser}
-                  ></input>
-                <textarea className='tweetForm__input--message'
-                onChange = {handleChangeMsg}></textarea>
+                ></input>
+                <textarea
+                  value={msg}
+                  onChange={handleChangeMsg}
+                  placeholder="your tweet here.."
+                  className="tweetForm__input--message"
+                ></textarea>
               </div>
               <div className="tweetForm__count" role="status">
                 <span className="tweetForm__count__text">
-                  {/* TODO : 트윗 총 개수를 보여줄 수 있는 Counter를 작성하세요. */}
-                  {'total: '+ inputs.length}
+                  {'total: ' + tweets.length}
                 </span>
               </div>
             </div>
             <div className="tweetForm__submit">
               <div className="tweetForm__submitIcon"></div>
-              <button className='tweetForm__submitButton' 
-              onClick = {handleButtonClick}>Tweet</button>
               {/* TODO : 작성한 트윗을 전송할 수 있는 button 엘리먼트를 작성하세요. */}
-              
+              <button className="tweetForm__submitButton" onClick={handleButtonClick}>
+                Tweet
+              </button>
             </div>
           </div>
         </div>
       </div>
-      <div className="tweet__selectUser"></div>
-      <ul className="tweets" onChange = {handleChangeMsg}>
-        {/* TODO : 하나의 트윗이 아니라, 주어진 트윗 목록(inputs) 갯수에 맞게 보여줘야 합니다. */}
-        {inputs.map((el) => (
-          <Tweet key = {el.id} tweet={el} />
-        ))}
-      </ul>
+      <div className="tweet__selectUser">
+        <select value={currentUsername} onChange={handleFilterTweet}>
+          <option value="default">
+            -- click to filter tweets by username --
+          </option>
+
+          {tweets.reduce((acc, cur) => {
+            const isNotUnique = acc.reduce((a, c) => {
+              if (c.username === cur.username) {
+                return true
+              }
+              return a === true ? true : false
+            }, false)
+
+            return isNotUnique ? acc : [...acc, cur]
+            }, []).map((tweet) => {
+            return (
+              <option key={tweet.id} value={tweet.username}>
+                {tweet.username}
+              </option>
+            );
+          })}
+        </select>
+        {currentUsername !== 'default' ? (
+          <button onClick={handleAllTweetButton}>
+            <i className="far fa-caret-square-left"></i>
+          </button>
+        ) : (
+          <div></div>
+        )}
+      </div>
+      <ul className="tweets">
+        {isFiltered ? filteredTweets.map(tweetsRenderer) : tweets.map(tweetsRenderer)}</ul>
       <Footer />
     </React.Fragment>
   );
